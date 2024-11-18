@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #fff;
+        }
+
+        .upload-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            width: 300px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        button {
+            background: #4caf50;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .drag-area {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+
+        .drag-area.drag-over {
+            border-color: white;
+        }
+
+        #fileName {
+            margin-top: 15px;
+        }
+
+        #preview {
+            margin-top: 20px;
+            display: none;
+        }
+
+        #preview img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        #errorMessage {
+            margin-top: 10px;
+            color: #ff3333;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <h1>Upload Your File</h1>
+        <button id="uploadButton">Choose File</button>
+        <input type="file" id="fileInput">
+        
+        <div class="drag-area" id="dragArea">
+            Drag & Drop Your File Here
+        </div>
+        
+        <p id="fileName">No file selected</p>
+        <p id="errorMessage">Invalid file type! Please upload a PNG.</p>
+        
+        <div id="preview">
+            <h3>Preview:</h3>
+            <img id="imagePreview" alt="Preview">
+        </div>
+    </div>
+
+    <script>
+        const uploadButton = document.getElementById('uploadButton');
+        const fileInput = document.getElementById('fileInput');
+        const fileNameDisplay = document.getElementById('fileName');
+        const dragArea = document.getElementById('dragArea');
+        const errorMessage = document.getElementById('errorMessage');
+        const preview = document.getElementById('preview');
+        const imagePreview = document.getElementById('imagePreview');
+
+        // Trigger file input on button click
+        uploadButton.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Handle file selection
+        fileInput.addEventListener('change', handleFile);
+
+        // Drag-and-drop functionality
+        dragArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dragArea.classList.add('drag-over');
+        });
+
+        dragArea.addEventListener('dragleave', () => {
+            dragArea.classList.remove('drag-over');
+        });
+
+        dragArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dragArea.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            handleSelectedFile(file);
+        });
+
+        function handleFile(event) {
+            const file = event.target.files[0];
+            handleSelectedFile(file);
+        }
+
+        function handleSelectedFile(file) {
+            if (file) {
+                if (file.type === 'image/png') {
+                    displayImage(file);
+                    errorMessage.style.display = 'none';
+                } else {
+                    fileNameDisplay.textContent = 'No file selected';
+                    errorMessage.style.display = 'block';
+                    preview.style.display = 'none';
+                }
+            }
+        }
+
+        function displayImage(file) {
+            fileNameDisplay.textContent = `Selected File: ${file.name}`;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
